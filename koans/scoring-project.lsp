@@ -50,8 +50,20 @@
 ; Your goal is to write the score method.
 
 (defun score (dice)
-  ; You need to write this method
-)
+  (labels ((score-of (roll n)
+             (if (>= n 3)
+                 (+ (if (= roll 1) 1000 (* roll 100))
+                    (score-of roll (- n 3)))
+                 (* n (case roll
+                        (1 100)
+                        (5 50)
+                        (t 0))))))
+    (let ((freq (make-hash-table))
+          (sum 0))
+      (dolist (k dice)
+        (incf (gethash k freq 0)))
+      (maphash (lambda (roll n) (incf sum (score-of roll n))) freq)
+      sum)))
 
 (define-test test-score-of-an-empty-list-is-zero
     (assert-equal 0 (score nil)))
